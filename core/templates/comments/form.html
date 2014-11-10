@@ -1,9 +1,0 @@
-{% load comments %}
-
-{% get_comment_form for object as form %}
-<form class="form" action="{% comment_form_target %}" method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="next" value="{% url 'blog:detail-entry' object.slug %}" />
-    {{ form }}
-    <input type="submit" name="submit" value="Post">
-</form>
