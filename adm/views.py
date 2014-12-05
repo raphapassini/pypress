@@ -6,11 +6,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.edit import (CreateView, UpdateView, FormView)
 from django.views.generic.list import ListView
+from django.forms.models import formset_factory
 
 from core.models import Category, Entry, Page
 
 from .models import Config
-from .forms import GeneralConfig, WriteConfig, ReadConfig
+from .forms import (GeneralConfig, WriteConfig, ReadConfig, CommentConfig,
+                    CreateMenuForm, MenuSelectForm, MenuItemForm)
 
 
 class LoginRequiredMixin(object):
@@ -133,3 +135,27 @@ class ReadConfigView(ConfigMixin, FormView):
     form_class = ReadConfig
     template_name = 'adm/config_read.html'
     success_url = reverse_lazy('adm:config-read')
+
+
+class CommentConfigView(ConfigMixin, FormView):
+    form_class = CommentConfig
+    template_name = 'adm/config_comment.html'
+    success_url = reverse_lazy('adm:config-comment')
+
+
+class MenuEditorView(LoginRequiredMixin, CreateView):
+    form_class = CreateMenuForm
+    template_name = 'adm/menu_editor.html'
+    success_url = reverse_lazy('adm:menu-editor')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(MenuEditorView, self).get_context_data(*args, **kwargs)
+        context['select_menu_form'] = self.get_menu_select_form()
+        context['menuitem_formset'] = self.get_menuitem_formset()
+        return context
+
+    def get_menu_select_form(self):
+        return MenuSelectForm()
+
+    def get_menuitem_formset(self):
+        return formset_factory(MenuItemForm, extra=2)

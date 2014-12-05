@@ -6,7 +6,8 @@ from .views import (Index,
                     CategoryListView, CategoryCreateView, CategoryEditView,
                     EntryCreateView, EntryEditView, EntryListView,
                     PageCreateView, PageEditView, PageListView,
-                    GeneralConfigView, WriteConfigView, ReadConfigView)
+                    GeneralConfigView, WriteConfigView, ReadConfigView,
+                    CommentConfigView, MenuEditorView)
 
 urlpatterns = patterns(
     '',
@@ -54,6 +55,12 @@ urlpatterns = patterns(
         name='config-write'),
     url(r'^config/read$', ReadConfigView.as_view(),
         name='config-read'),
+    url(r'^config/comment$', CommentConfigView.as_view(),
+        name='config-comment'),
+
+    #menu
+    url(r'^menus$', MenuEditorView.as_view(),
+        name='menu-editor'),
 
     url(r'^$', Index.as_view(), name='index'),
 )

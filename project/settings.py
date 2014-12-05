@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'django_gravatar',
     'bootstrap3',
     'timezone_field',
+    'treemenus',
 
     'adm',
     'core',

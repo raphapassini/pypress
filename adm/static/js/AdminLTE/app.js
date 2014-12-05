@@ -1065,7 +1065,8 @@ $(document).ready(function() {
     })
 
     /* enables form helpers in popovers */
-    $('form input[title!=""]').each(function(i,e ) {
+    $('.help-block').hide()
+    $('form input[title!=""], form textarea[title!=""]').each(function(i,e ) {
         var $this = $(e)
         $this.data('content', $this.attr('title'))
         $this.attr('title', 'Hint')

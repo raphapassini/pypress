@@ -23,7 +23,7 @@
     </li>
     <li class="treeview" data-url-pat="/entry.+|/entries.+">
         <a href="#">
-            <i class="glyphicon glyphicon-file"></i>
+            <i class="fa fa-fw fa-pencil"></i>
             <span>Entries</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>
@@ -53,6 +53,17 @@
             <li><a href="{% url 'adm:config-general' %}"><i class="fa fa-angle-double-right"></i>General</a></li>
             <li><a href="{% url 'adm:config-write' %}"><i class="fa fa-angle-double-right"></i>Write</a></li>
             <li><a href="{% url 'adm:config-read' %}"><i class="fa fa-angle-double-right"></i>Read</a></li>
+            <li><a href="{% url 'adm:config-comment' %}"><i class="fa fa-angle-double-right"></i>Comment</a></li>
+        </ul>
+    </li>
+    <li class="treeview" data-url-pat="/config.+">
+        <a href="#">
+            <i class="fa fa-eye"></i>
+            <span>Look and Feel</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu">
+            <li><a href="{% url 'adm:menu-editor' %}"><i class="fa fa-angle-double-right"></i>Menu</a></li>            
         </ul>
     </li>
 </ul>

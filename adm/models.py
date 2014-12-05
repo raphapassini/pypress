@@ -1,4 +1,5 @@
 import json
+import ast
 from django.db import models
 
 
@@ -21,4 +22,8 @@ class Config(models.Model):
                 return False
             else:
                 return True
+
+        if klass == 'MultipleChoiceField':
+            value = ast.literal_eval(value)
+
         return value

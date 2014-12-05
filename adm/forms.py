@@ -1,4 +1,5 @@
 from django import forms
+from treemenus.models import Menu, MenuItem
 from core.models import Category, Page
 from timezone_field import TimeZoneFormField
 
@@ -48,3 +49,84 @@ class ReadConfig(forms.Form):
         super(ReadConfig, self).__init__(*args, **kwargs)
         qs = Page.objects.all()
         self.fields['homepage_choices'].choices = [(x.pk, x.title) for x in qs]
+
+
+class CommentConfig(forms.Form):
+    DEFAULT_ENTRY_OPTIONS = [
+        ('allow_pingbacks', 'Allow notifications from other blogs'),
+        ('allow_comments', 'Allow users to comment on your new entries')
+    ]
+
+    COMMENT_OPTIONS = [
+        ('comment_author_name_email_required', 'Comments author have to '
+         'fill name and email'),
+        ('comment_author_must_register', 'Users must register before comment'),
+        ('show_avatar', 'Show author avatar in comments')
+    ]
+
+    COMMENT_SHOW_OPTIONS = [
+        ('older', 'Show the older comments first'),
+        ('newer', 'Show the newer comments first'),
+    ]
+
+    COMMENT_SEND_ME_EMAIL_WHEN = [
+        ('new_comment', 'Someone publish a comment'),
+        ('wait_moderation', 'A comment needs to be moderate')
+    ]
+
+    COMMENT_BEFORE_SHOW_OPTIONS = [
+        ('manual_approval', 'Every comment has to be manually approved'),
+        ('author_was_approved', 'The author already has a comment approved')
+    ]
+
+    default_entry_options = forms.MultipleChoiceField(
+        required=False, choices=DEFAULT_ENTRY_OPTIONS,
+        widget=forms.CheckboxSelectMultiple)
+    comment_options = forms.MultipleChoiceField(
+        required=False, choices=COMMENT_OPTIONS,
+        widget=forms.CheckboxSelectMultiple)
+    days_autoclose_comments = forms.IntegerField(
+        label="Auto close comments on entries older than X days",
+        required=False, initial=15)
+    comment_show_options = forms.ChoiceField(
+        label='Show comments in this order', initial='older', required=False,
+        choices=COMMENT_SHOW_OPTIONS)
+    slipt_comments = forms.CharField(
+        label="How many comments per page",
+        help_text="If you leave this field blank, all comments will be show.",
+        required=False)
+    comment_send_me_email_when = forms.MultipleChoiceField(
+        required=False, choices=COMMENT_SEND_ME_EMAIL_WHEN,
+        widget=forms.CheckboxSelectMultiple)
+    before_show_comment = forms.MultipleChoiceField(
+        required=False, choices=COMMENT_BEFORE_SHOW_OPTIONS,
+        widget=forms.CheckboxSelectMultiple)
+    comment_moderation = forms.CharField(
+        required=False, label="Comments containing any of this words, IP, "
+        "name, URL or Email will be added to moderation queue",
+        help_text="One word, IP, name, URL or Email PER LINE!",
+        widget=forms.Textarea)
+    comment_blacklist = forms.CharField(
+        required=False, label="Comments containing any of this words, IP, "
+        "name, URL or Email will be marked as spam",
+        help_text="One word, IP, name, URL or Email PER LINE!",
+        widget=forms.Textarea)
+
+
+class CreateMenuForm(forms.ModelForm):
+    class Meta:
+        model = Menu
+
+
+class MenuSelectForm(forms.Form):
+    menu = forms.ChoiceField(label="Choose a menu for edit", choices=[])
+
+    def __init__(self, *args, **kwargs):
+        super(MenuSelectForm, self).__init__(*args, **kwargs)
+        self.fields['menu'].choices = [(x.pk, x.name) for x in
+                                       Menu.objects.all()]
+
+
+class MenuItemForm(forms.ModelForm):
+    class Meta:
+        model = MenuItem

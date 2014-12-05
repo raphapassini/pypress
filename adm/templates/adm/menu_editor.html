@@ -1,0 +1,43 @@
+{% extends 'adm/site_base.html' %}
+{% load bootstrap3 %}
+
+{% block content-title %}Menu{% endblock %}
+{% block content-subtitle %}Editor{% endblock %}
+
+{% block content %}
+    <fieldset>
+        <legend>Create a new Menu</legend>
+        <form action="" method="post" class="form">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-10">
+                    {% bootstrap_form form layout="inline" %}
+                </div>
+                <div class="col-md-2">
+                    {% buttons %}
+                        <button type="submit" class="btn btn-primary">
+                            {% bootstrap_icon "check" %} Save
+                        </button>
+                    {% endbuttons %}
+                </div>
+            </div>
+        </form>
+    </fieldset>
+
+    <fieldset>
+        <legend>Edit Menu</legend>
+        <form id="edit_menu" name="edit_menu" method="get" class="form">
+            {% bootstrap_form select_menu_form layout="inline"%}
+        </form>
+    </fieldset>
+
+    <form method="post" action="">    
+    {{ menuitem_formset.management_form }}
+    {% for form in menuitem_formset %}
+        <fieldset>
+            <legend>Menu Item</legend>
+            {% bootstrap_form form %}
+        </fieldset>
+    {% endfor %}
+    </form>
+{% endblock %}
