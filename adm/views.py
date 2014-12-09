@@ -1,18 +1,20 @@
 import json
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.views.generic import View
 from django.views.generic.edit import (CreateView, UpdateView, FormView)
 from django.views.generic.list import ListView
-from django.forms.models import formset_factory
-
+from treemenus.models import MenuItem
 from core.models import Category, Entry, Page
 
-from .models import Config
+from .models import Config, MenuItemExtension
 from .forms import (GeneralConfig, WriteConfig, ReadConfig, CommentConfig,
-                    CreateMenuForm, MenuSelectForm, MenuItemForm)
+                    CreateMenuForm, MenuSelectForm, PageSelectForm,
+                    CategorySelectForm, ExternalLinkForm)
 
 
 class LoginRequiredMixin(object):
@@ -151,11 +153,47 @@ class MenuEditorView(LoginRequiredMixin, CreateView):
     def get_context_data(self, *args, **kwargs):
         context = super(MenuEditorView, self).get_context_data(*args, **kwargs)
         context['select_menu_form'] = self.get_menu_select_form()
-        context['menuitem_formset'] = self.get_menuitem_formset()
+        context['page_form'] = self.get_page_form()
+        context['category_form'] = self.get_category_form()
+        context['external_link_form'] = self.get_external_link_form()
+        context['menu_item_options'] = self.get_menuitem_options()
         return context
 
     def get_menu_select_form(self):
-        return MenuSelectForm()
+        return MenuSelectForm
 
-    def get_menuitem_formset(self):
-        return formset_factory(MenuItemForm, extra=2)
+    def get_page_form(self):
+        return PageSelectForm
+
+    def get_category_form(self):
+        return CategorySelectForm
+
+    def get_external_link_form(self):
+        return ExternalLinkForm
+
+    def get_menuitem_options(self):
+        return MenuItemExtension.MENU_TYPE_OPTIONS
+
+
+class MenuGetAjaxView(View):
+    def get(self, request, pk=None):
+        from django.core import serializers
+        data = serializers.serialize("json", MenuItem.objects.filter(
+            menu=pk).exclude(caption='root').order_by('rank'))
+        return HttpResponse(data)
+
+
+def load_template(request, tpl=None):
+    tpl = '.'.join([tpl, 'mst'])
+    full_tpl_path = '/'.join(['adm', 'js_templates', tpl])
+    return render(request, full_tpl_path)
+
+
+def pypress_javascript(request):
+    tpl = 'adm/includes/_pypress_javascript.js'
+    d = {
+        'template_url': reverse(
+            'adm:load-tpl', kwargs={'tpl': '__placeholder__'})
+    }
+    return render(request, tpl, {'data': json.dumps(d)},
+                  content_type="text/javascript")

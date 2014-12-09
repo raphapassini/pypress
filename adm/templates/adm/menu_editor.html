@@ -5,39 +5,109 @@
 {% block content-subtitle %}Editor{% endblock %}
 
 {% block content %}
-    <fieldset>
-        <legend>Create a new Menu</legend>
-        <form action="" method="post" class="form">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col-md-10">
-                    {% bootstrap_form form layout="inline" %}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="box-group" id="accordion" role="tablist" aria-multiselectable="true">
+                {% for k,v in menu_item_options %}            
+                <div class="panel box box-primary" style="margin-bottom: 5px;">
+                    <div class="box-header" role="tab" id="heading_{{k}}">
+                      <h4 class="box-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{k}}" aria-expanded="true" aria-controls="#heading_{{k}}">
+                          {{v}}
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapse_{{k}}" class="box-collapse collapse" role="tabbox" aria-labelledby="heading_{{k}}">
+                      <div class="box-body">
+                        {% if k == 'page' %}
+                            {% bootstrap_form page_form %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="btn-group pull-right" role="group">
+                                      <button type="button" class="btn btn-default select-all">Select All</button>
+                                      <button type="button" class="btn btn-primary">Add to menu</button>                          
+                                    </div>
+                                </div>
+                            </div>
+                        {% elif k == 'category' %}
+                            {% bootstrap_form category_form %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="btn-group pull-right" role="group">
+                                      <button type="button" class="btn btn-default select-all">Select All</button>
+                                      <button type="button" class="btn btn-primary">Add to menu</button>                          
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            {% bootstrap_form external_link_form %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="btn-group pull-right" role="group">                                      
+                                      <button type="button" class="btn btn-primary">Add to menu</button>                          
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}                        
+                      </div>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    {% buttons %}
-                        <button type="submit" class="btn btn-primary">
-                            {% bootstrap_icon "check" %} Save
-                        </button>
-                    {% endbuttons %}
-                </div>
+                {% endfor %}
             </div>
-        </form>
-    </fieldset>
+        </div>
+        <div class="col-md-9">
+            <div class="box box-solid">
+                <div class="box-header">
+                    <h3 class="box-title">Menu Items</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        {% bootstrap_form select_menu_form layout="horizontal" %}
+                    </div>            
+                    <div id="menu_items" style="margin-top: 20px;"></div>
+                </div><!-- /.box-body -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
-    <fieldset>
-        <legend>Edit Menu</legend>
-        <form id="edit_menu" name="edit_menu" method="get" class="form">
-            {% bootstrap_form select_menu_form layout="inline"%}
-        </form>
-    </fieldset>
+{% block extra-scripts %}
+<script>
+    $(document).ready(function() {
+        var menu_get_url = "{% url 'adm:menu-get' pk=0 %}"
 
-    <form method="post" action="">    
-    {{ menuitem_formset.management_form }}
-    {% for form in menuitem_formset %}
-        <fieldset>
-            <legend>Menu Item</legend>
-            {% bootstrap_form form %}
-        </fieldset>
-    {% endfor %}
-    </form>
+        //enable chosen
+        $("#id_menu").chosen()        
+        $("#id_page").chosen({width: '100%'})
+        $("#id_category").chosen({width: '100%'})
+        
+        //Show menu when user select a menu to edit
+        $("#id_menu").change(function() {
+            var menu_pk = $(this).val()
+            var url = menu_get_url.replace('0', menu_pk)
+            if(!menu_pk)
+                return;
+            
+            $.getJSON(url, function(response, status, xhr) {
+                render_menu_items('menu_items', {'items': response})
+            })
+        })
+
+        //Control select all
+        $(".select-all").click(function() {
+            var $select = $(this).parents('.box-body').find('select')
+            $select.children('option').attr('selected', true)
+            $select.trigger('chosen:updated')
+        })
+
+        function render_menu_items(template, view) {
+            var url = pypress.template_url.replace('__placeholder__', template)
+            $.get(url, function(template) {                    
+                Mustache.parse(template);   // optional, speeds up future uses
+                var rendered = Mustache.render(template, view);
+                $('#menu_items').html(rendered);
+            })
+        }
+    })
+</script>
 {% endblock %}

@@ -1,6 +1,7 @@
 import json
 import ast
 from django.db import models
+from treemenus.models import MenuItem
 
 
 class Config(models.Model):
@@ -27,3 +28,14 @@ class Config(models.Model):
             value = ast.literal_eval(value)
 
         return value
+
+
+class MenuItemExtension(models.Model):
+    MENU_TYPE_OPTIONS = [
+        ('page', 'Pages'),
+        ('category', 'Categories'),
+        ('link', 'Links')
+    ]
+    menu_item = models.OneToOneField(MenuItem, related_name="extension")
+    menu_type = models.CharField(max_length=255, choices=MENU_TYPE_OPTIONS)
+    extra = models.TextField(null=True)

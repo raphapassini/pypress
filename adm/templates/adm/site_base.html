@@ -19,6 +19,8 @@
         <link href="{% static 'css/daterangepicker/daterangepicker-bs3.css' %}" rel="stylesheet" type="text/css" />
         <!-- bootstrap wysihtml5 - text editor -->
         <link href="{% static 'css/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css'%}" rel="stylesheet" type="text/css" />
+        <!-- jquery chosen -->
+        <link href="{% static 'js/plugins/chosen/chosen.min.css'%}" rel="stylesheet" type="text/css" />        
         <!-- Theme style -->
         <link href="{% static 'css/AdminLTE.css' %}" rel="stylesheet" type="text/css" />
 
@@ -82,10 +84,14 @@
         <script src="{% static 'js/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js' %}" type="text/javascript"></script>
         <!-- iCheck -->
         <script src="{% static 'js/plugins/iCheck/icheck.min.js' %}" type="text/javascript"></script>
-
+        <!-- Chosen -->
+        <script src="{% static 'js/plugins/chosen/chosen.jquery.min.js' %}" type="text/javascript"></script>
+        <!-- Mustache -->
+        <script src="{% static 'js/plugins/mustache/mustache.js' %}" type="text/javascript"></script>
+        <!-- Pypress object -->
+        <script src="{% url 'adm:pypress-javascript' %}" type="text/javascript"></script>
         <!-- AdminLTE App -->
         <script src="{% static 'js/AdminLTE/app.js' %}" type="text/javascript"></script>
-
         {% block extra-scripts %}{% endblock %}
     </body>
 </html>

@@ -41,7 +41,7 @@ class Content(models.Model):
     title = models.CharField(max_length=150)
     slug = models.SlugField(max_length=165, unique=True)
     body = models.TextField()
-    tags = TaggableManager(through=TaggedWhatever)
+    tags = TaggableManager(through=TaggedWhatever, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
     published_at = models.DateTimeField(editable=False, null=True, blank=True)

@@ -119,12 +119,39 @@ class CreateMenuForm(forms.ModelForm):
 
 
 class MenuSelectForm(forms.Form):
-    menu = forms.ChoiceField(label="Choose a menu for edit", choices=[])
+    menu = forms.ChoiceField(label="Choose a menu for edit", choices=[],
+                             required=False)
 
     def __init__(self, *args, **kwargs):
         super(MenuSelectForm, self).__init__(*args, **kwargs)
         self.fields['menu'].choices = [(x.pk, x.name) for x in
                                        Menu.objects.all()]
+        self.fields['menu'].choices.insert(0, ('', '---------'))
+
+
+class PageSelectForm(forms.Form):
+    page = forms.MultipleChoiceField(
+        required=False, choices=[], label='',)
+
+    def __init__(self, *args, **kwargs):
+        super(PageSelectForm, self).__init__(*args, **kwargs)
+        self.fields['page'].choices = [(x.pk, x.title) for x in
+                                       Page.objects.all()]
+
+
+class CategorySelectForm(forms.Form):
+    category = forms.MultipleChoiceField(
+        required=False, choices=[], label='',)
+
+    def __init__(self, *args, **kwargs):
+        super(CategorySelectForm, self).__init__(*args, **kwargs)
+        self.fields['category'].choices = [(x.pk, x.name) for x in
+                                           Category.objects.all()]
+
+
+class ExternalLinkForm(forms.Form):
+    URL = forms.URLField()
+    text = forms.CharField(label='Link text')
 
 
 class MenuItemForm(forms.ModelForm):

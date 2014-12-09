@@ -7,7 +7,8 @@ from .views import (Index,
                     EntryCreateView, EntryEditView, EntryListView,
                     PageCreateView, PageEditView, PageListView,
                     GeneralConfigView, WriteConfigView, ReadConfigView,
-                    CommentConfigView, MenuEditorView)
+                    CommentConfigView, MenuEditorView, MenuGetAjaxView,
+                    load_template, pypress_javascript)
 
 urlpatterns = patterns(
     '',
@@ -61,6 +62,15 @@ urlpatterns = patterns(
     #menu
     url(r'^menus$', MenuEditorView.as_view(),
         name='menu-editor'),
+    url(r'^menu/(?P<pk>[\w-]+)/$', MenuGetAjaxView.as_view(),
+        name='menu-get'),
 
+    #utils
+    url(r'^load_tpl/(?P<tpl>[\w]+)/$', load_template,
+        name='load-tpl'),
+    url(r'^pypress_javascript$', pypress_javascript,
+        name='pypress-javascript'),
+
+    #index
     url(r'^$', Index.as_view(), name='index'),
 )
