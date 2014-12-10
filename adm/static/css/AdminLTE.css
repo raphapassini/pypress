@@ -3545,3 +3545,21 @@ pypress
 .pagination-content > .pagination {
   margin: 0;
 }
+
+.box .box-header .box-title {
+  width: 100%;
+}
+
+.box .box-header a {
+  width: 100%;
+  display: block;
+}
+
+.box .box-header .box-title > i{
+  display: inline-block;
+  float: left;  
+}
+
+.box .box-header .box-title.level2 > i{
+  margin-left: 20px;
+}

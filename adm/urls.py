@@ -1,13 +1,13 @@
 from django.conf.urls import patterns, url
 from django.contrib.auth.views import login, logout
-
+from rest_framework.routers import DefaultRouter
 from myu.views import (UserCreateView, UserEditView, UserListView)
 from .views import (Index,
                     CategoryListView, CategoryCreateView, CategoryEditView,
                     EntryCreateView, EntryEditView, EntryListView,
                     PageCreateView, PageEditView, PageListView,
                     GeneralConfigView, WriteConfigView, ReadConfigView,
-                    CommentConfigView, MenuEditorView, MenuGetAjaxView,
+                    CommentConfigView, MenuEditorView, MenuViewSet,
                     load_template, pypress_javascript)
 
 urlpatterns = patterns(
@@ -59,12 +59,10 @@ urlpatterns = patterns(
     url(r'^config/comment$', CommentConfigView.as_view(),
         name='config-comment'),
 
-    #menu
+    #menu-editor
     url(r'^menus$', MenuEditorView.as_view(),
         name='menu-editor'),
-    url(r'^menu/(?P<pk>[\w-]+)/$', MenuGetAjaxView.as_view(),
-        name='menu-get'),
-
+    
     #utils
     url(r'^load_tpl/(?P<tpl>[\w]+)/$', load_template,
         name='load-tpl'),
@@ -74,3 +72,8 @@ urlpatterns = patterns(
     #index
     url(r'^$', Index.as_view(), name='index'),
 )
+
+
+router = DefaultRouter()
+router.register(r'menu', MenuViewSet)
+urlpatterns += router.urls

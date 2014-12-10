@@ -1,20 +1,75 @@
 {% verbatim %}
-<div class="box-group" id="accordion" role="tablist" aria-multiselectable="true">
+<div class="box-group" id="accordion-menu-items" role="tablist" aria-multiselectable="true">
     {{#items}}    
         <div class="panel box" style="margin-bottom: 5px;">
             <div class="box-header" role="tab" id="heading_{{pk}}">
               <h4 class="box-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{pk}}" aria-expanded="true" aria-controls="#heading_{{pk}}">
-                  {{fields.caption}}
+                <i class="fa fa-fw fa-ellipsis-v"></i>
+                <a data-toggle="collapse" data-parent="#accordion-menu-items" href="#collapse_{{pk}}" aria-expanded="true" aria-controls="#heading_{{pk}}">
+                  {{caption}}
                 </a>
               </h4>
             </div>
             <div id="collapse_{{pk}}" class="box-collapse collapse" role="tabbox" aria-labelledby="heading_{{pk}}">
-              <div class="box-body">
-                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+              <div class="box-body">                
+                <form role="form" method="" class="menu_item_{{pk}}">
+                  <div class="form-group">
+                    <label class="control-label" for="id_menu_item_{{pk}}_caption">Text to display</label>
+                    <input class="form-control" id="id_menu_item_{{pk}}_caption" name="menu_item_caption" 
+                    placeholder="Text to Display" required="required" title="" type="text" value="{{caption}}">                    
+                  </div>
+                </form>
+                <div class="form-group">
+                    <label class="control-label" for="id_menu_item_{{pk}}_type">Type</label>
+                    <input class="form-control" id="id_menu_item_{{pk}}_type" name="menu_item_type" 
+                    placeholder="Text to Display" required="required" title="" type="text" value="{{extension.menu_type_display}} - {{extension.related_display}}" disabled="disabled">
+                  </div>               
+                  <div class="form-group">                    
+                    <div class="btn-group" role="group">
+                      <button type="button" class="btn btn-default">Move to Top</button>
+                      <button type="button" class="btn btn-default">Move Up</button>
+                      <button type="button" class="btn btn-danger">Delete</button>
+                    </div>
+                  </div>
               </div>
             </div>
-        </div>        
+        </div>
+
+        {{#subitems}}
+          <div class="panel box" style="margin-bottom: 5px;">
+            <div class="box-header" role="tab" id="heading_{{pk}}">              
+              <h4 class="box-title level{{level}}">                
+                <i class="fa fa-fw fa-ellipsis-v"></i>
+                <a data-toggle="collapse" data-parent="#accordion-menu-items" href="#collapse_{{pk}}" aria-expanded="true" aria-controls="#heading_{{pk}}">
+                  {{caption}}
+                </a>
+              </h4>
+            </div>
+            <div id="collapse_{{pk}}" class="box-collapse collapse" role="tabbox" aria-labelledby="heading_{{pk}}">
+              <div class="box-body">                
+                <form role="form" method="" class="menu_item_{{pk}}">
+                  <div class="form-group">
+                    <label class="control-label" for="id_menu_item_{{pk}}_caption">Text to display</label>
+                    <input class="form-control" id="id_menu_item_{{pk}}_caption" name="menu_item_caption" 
+                    placeholder="Text to Display" required="required" title="" type="text" value="{{caption}}">                    
+                  </div>
+                </form>
+                <div class="form-group">
+                    <label class="control-label" for="id_menu_item_{{pk}}_type">Type</label>
+                    <input class="form-control" id="id_menu_item_{{pk}}_type" name="menu_item_type" 
+                    placeholder="Text to Display" required="required" title="" type="text" value="{{extension.menu_type_display}} - {{extension.related_display}}" disabled="disabled">
+                  </div>               
+                  <div class="form-group">                    
+                    <div class="btn-group" role="group">
+                      <button type="button" class="btn btn-default">Move to Top</button>
+                      <button type="button" class="btn btn-default">Move Up</button>
+                      <button type="button" class="btn btn-danger">Delete</button>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+        {{/subitems}}
     {{/items}}
 </div>
 {% endverbatim %}

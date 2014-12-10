@@ -48,6 +48,10 @@ INSTALLED_APPS = (
     'bootstrap3',
     'timezone_field',
     'treemenus',
+    'rest_framework',
+
+    #dev
+    'django_extensions',
 
     'adm',
     'core',

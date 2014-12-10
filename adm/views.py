@@ -1,16 +1,17 @@
 import json
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.views.generic import View
 from django.views.generic.edit import (CreateView, UpdateView, FormView)
 from django.views.generic.list import ListView
-from treemenus.models import MenuItem
+from treemenus.models import Menu, MenuItem
+from rest_framework import viewsets
 from core.models import Category, Entry, Page
 
+from .serializers import MenuSerializer, MenuItemSerializer
 from .models import Config, MenuItemExtension
 from .forms import (GeneralConfig, WriteConfig, ReadConfig, CommentConfig,
                     CreateMenuForm, MenuSelectForm, PageSelectForm,
@@ -175,12 +176,12 @@ class MenuEditorView(LoginRequiredMixin, CreateView):
         return MenuItemExtension.MENU_TYPE_OPTIONS
 
 
-class MenuGetAjaxView(View):
-    def get(self, request, pk=None):
-        from django.core import serializers
-        data = serializers.serialize("json", MenuItem.objects.filter(
-            menu=pk).exclude(caption='root').order_by('rank'))
-        return HttpResponse(data)
+class MenuViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for viewing and editing user instances.
+    """
+    serializer_class = MenuSerializer
+    queryset = Menu.objects.all()
 
 
 def load_template(request, tpl=None):

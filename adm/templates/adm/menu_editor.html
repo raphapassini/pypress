@@ -7,12 +7,12 @@
 {% block content %}
     <div class="row">
         <div class="col-md-3">
-            <div class="box-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="box-group" id="accordion-menu-options" role="tablist" aria-multiselectable="false" data-toggle="collapse" >
                 {% for k,v in menu_item_options %}            
                 <div class="panel box box-primary" style="margin-bottom: 5px;">
                     <div class="box-header" role="tab" id="heading_{{k}}">
                       <h4 class="box-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{k}}" aria-expanded="true" aria-controls="#heading_{{k}}">
+                        <a data-toggle="collapse" data-parent="#accordion-menu-options" href="#collapse_{{k}}" aria-expanded="true" aria-controls="#heading_{{k}}">
                           {{v}}
                         </a>
                       </h4>
@@ -65,6 +65,13 @@
                         {% bootstrap_form select_menu_form layout="horizontal" %}
                     </div>            
                     <div id="menu_items" style="margin-top: 20px;"></div>
+                    <div class="box-footer">                
+                        <div class="row">        
+                            <div class="col-md-12">
+                                <button id="save_menu" type="button" class="btn btn-primary pull-right">Save Menu</button>                        
+                            </div>
+                        </div>
+                    </div>
                 </div><!-- /.box-body -->
             </div>
         </div>
@@ -74,7 +81,7 @@
 {% block extra-scripts %}
 <script>
     $(document).ready(function() {
-        var menu_get_url = "{% url 'adm:menu-get' pk=0 %}"
+        var menu_get_url = "{% url 'adm:menu-detail' pk=0 %}"
 
         //enable chosen
         $("#id_menu").chosen()        
@@ -89,7 +96,13 @@
                 return;
             
             $.getJSON(url, function(response, status, xhr) {
-                render_menu_items('menu_items', {'items': response})
+                items = response.contained_items
+                for(var x=0; x < items.length; x++) {
+                    var r = items[x]
+                    if(r['extension'] && r['extension']['extra'])
+                        r.extension.extra = JSON.parse(r.extension.extra)                    
+                }
+                render_menu_items('menu_items', {'items': items})
             })
         })
 
