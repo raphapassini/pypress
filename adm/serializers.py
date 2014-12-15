@@ -5,27 +5,42 @@ from .models import MenuItemExtension
 
 class SubMenuItemSerialize(serializers.ModelSerializer):
     pk = serializers.IntegerField(source='id')
-    
+
     class Meta:
         model = MenuItem
 
 
 class MenuExtensionSerializer(serializers.ModelSerializer):
-    menu_type_display = serializers.CharField(source='get_menu_type_display')
-    related_display = serializers.CharField(source='get_related_display')
+    menu_type_display = serializers.CharField(
+        source='get_menu_type_display', read_only=True)
+    related_display = serializers.CharField(
+        source='get_related_display', read_only=True)
+    menu_item = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = MenuItemExtension
 
 
 class MenuItemSerializer(serializers.ModelSerializer):
-    pk = serializers.IntegerField(source='id')
+    pk = serializers.IntegerField(source='id', read_only=True)
     subitems = SubMenuItemSerialize(many=True, read_only=True,
                                     source='children',)
-    extension = MenuExtensionSerializer(read_only=True)
+    extension = MenuExtensionSerializer()
+    menu = serializers.PrimaryKeyRelatedField(queryset=Menu.objects.all())
 
     class Meta:
         model = MenuItem
+
+    def create(self, validated_data):
+        extension = validated_data.pop('extension')
+
+        if not validated_data.get('parent'):
+            validated_data['parent'] = MenuItem.objects.get(caption='root')
+
+        instance = MenuItem.objects.create(**validated_data)
+        extension['menu_item'] = instance
+        MenuItemExtension.objects.create(**extension)
+        return instance
 
 
 class MenuSerializer(serializers.ModelSerializer):

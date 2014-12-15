@@ -1053,7 +1053,58 @@ $(window).load(function() {
     }
 })(window.jQuery || window.Zepto);
 
+function get_message(type, content, return_obj) {
+    var $div = $('<div>')
+    var $btn_close = $('<button>')
+
+    $btn_close.addClass('close')
+    $btn_close.attr('data-dismiss', 'alert')
+    $btn_close.attr('aria-hidden', 'true')
+    $btn_close.html('x')
+
+    $div.addClass('alert alert-dismissable').addClass('alert-' + type)
+    $div.append('<i class="fa fa-ban">')
+    $div.append($btn_close[0].outerHTML)
+    $div.append(content)
+
+    if(return_obj)
+        return $div
+    else
+        return $div[0].outerHTML
+}
+
+function show_message(type, content, target) {
+    if(!target)
+        target = 'section.content'
+
+    var msg = get_message(type, content)
+    $(target).prepend(msg)
+}
+
 $(document).ready(function() {
+    $.ajaxSetup({
+     beforeSend: function(xhr, settings) {
+         function getCookie(name) {
+             var cookieValue = null;
+             if (document.cookie && document.cookie != '') {
+                 var cookies = document.cookie.split(';');
+                 for (var i = 0; i < cookies.length; i++) {
+                     var cookie = jQuery.trim(cookies[i]);
+                     // Does this cookie string begin with the name we want?
+                 if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                     break;
+                 }
+             }
+         }
+         return cookieValue;
+         }
+         if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+             // Only send the token to relative URLs i.e. locally.
+             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+         }
+     }
+    });
 
     /* Enables dropdown menu to open automatically when user is
        inside one of submenus */

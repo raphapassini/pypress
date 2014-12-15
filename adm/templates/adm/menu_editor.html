@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-md-3">
             <div class="box-group" id="accordion-menu-options" role="tablist" aria-multiselectable="false" data-toggle="collapse" >
-                {% for k,v in menu_item_options %}            
+                {% for k,v in menu_item_options %}
                 <div class="panel box box-primary" style="margin-bottom: 5px;">
                     <div class="box-header" role="tab" id="heading_{{k}}">
                       <h4 class="box-title">
@@ -21,34 +21,14 @@
                       <div class="box-body">
                         {% if k == 'page' %}
                             {% bootstrap_form page_form %}
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="btn-group pull-right" role="group">
-                                      <button type="button" class="btn btn-default select-all">Select All</button>
-                                      <button type="button" class="btn btn-primary">Add to menu</button>                          
-                                    </div>
-                                </div>
-                            </div>
+                            {% include 'adm/includes/_menu_editor_type_buttons.html' %}
                         {% elif k == 'category' %}
                             {% bootstrap_form category_form %}
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="btn-group pull-right" role="group">
-                                      <button type="button" class="btn btn-default select-all">Select All</button>
-                                      <button type="button" class="btn btn-primary">Add to menu</button>                          
-                                    </div>
-                                </div>
-                            </div>
+                            {% include 'adm/includes/_menu_editor_type_buttons.html' %}
                         {% else %}
                             {% bootstrap_form external_link_form %}
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="btn-group pull-right" role="group">                                      
-                                      <button type="button" class="btn btn-primary">Add to menu</button>                          
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}                        
+                            {% include 'adm/includes/_menu_editor_type_buttons.html' with hide_select=1 %}
+                        {% endif %}
                       </div>
                     </div>
                 </div>
@@ -63,12 +43,12 @@
                 <div class="box-body">
                     <div class="row">
                         {% bootstrap_form select_menu_form layout="horizontal" %}
-                    </div>            
+                    </div>
                     <div id="menu_items" style="margin-top: 20px;"></div>
-                    <div class="box-footer">                
-                        <div class="row">        
+                    <div class="box-footer">
+                        <div class="row">
                             <div class="col-md-12">
-                                <button id="save_menu" type="button" class="btn btn-primary pull-right">Save Menu</button>                        
+                                <button id="save_menu" type="button" class="btn btn-primary pull-right">Save Menu</button>
                             </div>
                         </div>
                     </div>
@@ -82,25 +62,29 @@
 <script>
     $(document).ready(function() {
         var menu_get_url = "{% url 'adm:menu-detail' pk=0 %}"
+        var menu_item_list_url = "{% url 'adm:menuitem-list' %}"
+        var active_menu_pk = false
 
         //enable chosen
-        $("#id_menu").chosen()        
+        $("#id_menu").chosen()
         $("#id_page").chosen({width: '100%'})
         $("#id_category").chosen({width: '100%'})
-        
+
         //Show menu when user select a menu to edit
         $("#id_menu").change(function() {
             var menu_pk = $(this).val()
             var url = menu_get_url.replace('0', menu_pk)
             if(!menu_pk)
                 return;
-            
+
+            active_menu_pk = menu_pk
+
             $.getJSON(url, function(response, status, xhr) {
                 items = response.contained_items
                 for(var x=0; x < items.length; x++) {
                     var r = items[x]
                     if(r['extension'] && r['extension']['extra'])
-                        r.extension.extra = JSON.parse(r.extension.extra)                    
+                        r.extension.extra = JSON.parse(r.extension.extra)
                 }
                 render_menu_items('menu_items', {'items': items})
             })
@@ -113,9 +97,77 @@
             $select.trigger('chosen:updated')
         })
 
+        //Control add of new menu item
+        $(".__add_menu_item").click(function() {
+
+            if(!active_menu_pk) {
+                show_message('danger', 'Please, select a menu first!')
+                return
+            }
+
+            var url = menu_item_list_url
+            var menu_type = $(this).parents('.box-body').children('input.__menu_type').val()
+            var $select = $("#id_" + menu_type)
+            var selected = $select.val()
+            var item = false
+
+            if(menu_type == 'link') {
+                data = {
+                    menu: active_menu_pk,
+                    caption: $("#id_text").val(),
+                    url: $("#id_URL").val(),
+                    extension: {
+                        menu_type: String(menu_type)
+                    }
+                }
+                doAjax()
+            }
+
+            for(var x = 0; x < selected.length; x++) {
+                item = selected[x]
+                extra_dict = JSON.stringify({'pk': item})
+                caption = $select.children('option[value="' + item + '"]').html()
+
+                data = {
+                    menu: active_menu_pk,
+                    caption: caption,
+                    extension: {
+                        menu_type: String(menu_type),
+                        extra: extra_dict
+                    }
+                }
+                doAjax()
+            }
+
+            function doAjax() {
+                $.ajax(url, {
+                    type: 'POST',
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        $("#id_menu").trigger('change')
+                    }
+                })
+            }
+        })
+
+        //Deletion of menu-items
+        $('#menu_items').on('click', '.__delete_menu_item', function() {
+            var pk = $(this).data('pk')
+            var url = pypress.menu_item_detail_url.replace('0', pk)
+            var $el = $(this)
+
+            $.ajax(url, {
+                type: 'DELETE',
+                success: function() {
+                    $el.parents('.panel.box').remove()
+                }
+            })
+        })
+
         function render_menu_items(template, view) {
             var url = pypress.template_url.replace('__placeholder__', template)
-            $.get(url, function(template) {                    
+            $.get(url, function(template) {
                 Mustache.parse(template);   // optional, speeds up future uses
                 var rendered = Mustache.render(template, view);
                 $('#menu_items').html(rendered);
