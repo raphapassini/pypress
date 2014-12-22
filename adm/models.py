@@ -42,7 +42,11 @@ class MenuItemExtension(models.Model):
     extra = models.TextField(null=True)
 
     def extra_to_dict(self):
-        return json.loads(self.extra)
+        try:
+            data = json.loads(self.extra)
+        except Exception as e:
+            data = {'exception': e.__str__()}
+        return data
 
     def get_related_display(self):
         obj = self.get_related_obj()
@@ -50,7 +54,13 @@ class MenuItemExtension(models.Model):
             field = 'title'
         elif self.menu_type == 'category':
             field = 'name'
-        return getattr(obj, field)
+        elif self.menu_type == 'link':
+            return self.menu_item.url
+
+        if hasattr(obj, field):
+            return getattr(obj, field)
+        else:
+            return ''
 
     def get_related_obj(self):
         extra = self.extra_to_dict()
@@ -59,5 +69,10 @@ class MenuItemExtension(models.Model):
             obj = Page
         elif self.menu_type == 'category':
             obj = Category
+        elif self.menu_type == 'link':
+            return None
 
-        return obj.objects.get(pk=pk)
+        try:
+            return obj.objects.get(pk=pk)
+        except obj.DoesNotExist:
+            return None

@@ -8,7 +8,7 @@ from .views import (Index,
                     PageCreateView, PageEditView, PageListView,
                     GeneralConfigView, WriteConfigView, ReadConfigView,
                     CommentConfigView, MenuEditorView, MenuViewSet,
-                    load_template, pypress_javascript)
+                    MenuItemViewSet, load_template, pypress_javascript)
 
 urlpatterns = patterns(
     '',
@@ -76,4 +76,5 @@ urlpatterns = patterns(
 
 router = DefaultRouter()
 router.register(r'menu', MenuViewSet)
+router.register(r'menu_item', MenuItemViewSet)
 urlpatterns += router.urls

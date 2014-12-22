@@ -178,10 +178,18 @@ class MenuEditorView(LoginRequiredMixin, CreateView):
 
 class MenuViewSet(viewsets.ModelViewSet):
     """
-    A viewset for viewing and editing user instances.
+    A viewset for viewing and editing Menu instances
     """
     serializer_class = MenuSerializer
     queryset = Menu.objects.all()
+
+
+class MenuItemViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for viewing and editing MenuItem instances
+    """
+    serializer_class = MenuItemSerializer
+    queryset = MenuItem.objects.all()
 
 
 def load_template(request, tpl=None):
@@ -194,7 +202,9 @@ def pypress_javascript(request):
     tpl = 'adm/includes/_pypress_javascript.js'
     d = {
         'template_url': reverse(
-            'adm:load-tpl', kwargs={'tpl': '__placeholder__'})
+            'adm:load-tpl', kwargs={'tpl': '__placeholder__'}),
+        'menu_item_detail_url': reverse(
+            'adm:menuitem-detail', kwargs={'pk': 0})
     }
     return render(request, tpl, {'data': json.dumps(d)},
                   content_type="text/javascript")

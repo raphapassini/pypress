@@ -119,7 +119,7 @@ class CreateMenuForm(forms.ModelForm):
 
 
 class MenuSelectForm(forms.Form):
-    menu = forms.ChoiceField(label="Choose a menu for edit", choices=[],
+    menu = forms.ChoiceField(label="Menu", choices=[],
                              required=False)
 
     def __init__(self, *args, **kwargs):
@@ -130,6 +130,10 @@ class MenuSelectForm(forms.Form):
 
 
 class PageSelectForm(forms.Form):
+    page_type = forms.CharField(
+        max_length=255,
+        widget=forms.HiddenInput(attrs={'class': '__menu_type'}),
+        initial='page')
     page = forms.MultipleChoiceField(
         required=False, choices=[], label='',)
 
@@ -140,6 +144,10 @@ class PageSelectForm(forms.Form):
 
 
 class CategorySelectForm(forms.Form):
+    category_type = forms.CharField(
+        max_length=255,
+        widget=forms.HiddenInput(attrs={'class': '__menu_type'}),
+        initial='category')
     category = forms.MultipleChoiceField(
         required=False, choices=[], label='',)
 
@@ -150,6 +158,10 @@ class CategorySelectForm(forms.Form):
 
 
 class ExternalLinkForm(forms.Form):
+    link_type = forms.CharField(
+        max_length=255,
+        widget=forms.HiddenInput(attrs={'class': '__menu_type'}),
+        initial='link')
     URL = forms.URLField()
     text = forms.CharField(label='Link text')
 

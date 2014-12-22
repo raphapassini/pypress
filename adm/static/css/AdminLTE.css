@@ -112,7 +112,7 @@ body.fixed .wrapper {
 .content {
   padding: 20px 15px;
   background: #f9f9f9;
-  overflow: auto;
+  overflow: visible;
 }
 /* Utility */
 /* H1 - H6 font */
@@ -3557,7 +3557,7 @@ pypress
 
 .box .box-header .box-title > i{
   display: inline-block;
-  float: left;  
+  float: left;
 }
 
 .box .box-header .box-title.level2 > i{

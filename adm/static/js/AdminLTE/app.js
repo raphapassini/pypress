@@ -1053,7 +1053,176 @@ $(window).load(function() {
     }
 })(window.jQuery || window.Zepto);
 
+
+/***********************************
+
+Pypress Functions
+
+************************************/
+
+
+/*!
+ * Get the HTML of a bootstrap alert
+ *
+ * Usage:
+ * var content = get_message('alert', 'My message')
+ * $('body').append(content)
+ *
+ */
+function get_message(type, content, return_obj) {
+    var $div = $('<div>')
+    var $btn_close = $('<button>')
+
+    $btn_close.addClass('close')
+    $btn_close.attr('data-dismiss', 'alert')
+    $btn_close.attr('aria-hidden', 'true')
+    $btn_close.html('x')
+
+    $div.addClass('alert alert-dismissable').addClass('alert-' + type)
+    $div.append('<i class="fa fa-ban">')
+    $div.append($btn_close[0].outerHTML)
+    $div.append(content)
+
+    if(return_obj)
+        return $div
+    else
+        return $div[0].outerHTML
+}
+
+/*!
+ * Show a bootstrap alert in the specified target
+ *
+ * Usage:
+ * show_message('warning', 'My message', '#append_in_this_div')
+ */
+function show_message(type, content, target) {
+    if(!target)
+        target = 'section.content'
+
+    $(target).find('.alert').remove()
+
+    var msg = get_message(type, content)
+    $(target).prepend(msg)
+}
+
+/*!
+ * Show a dynamic modal, you can set buttons and the respectives
+ * callbacks for each button
+ *
+ * Usage:
+ *
+ * show_modal('Teste', 'Corpo da mensagem', false, {
+ *   callbacks: [
+ *       {
+ *           'name': 'cancel',
+ *           'fn': function() { alert("cancel was clicked") }
+ *       },
+ *       {
+ *           'name': 'confirm',
+ *           'fn': function() { alert("confirm was clicked") }
+ *      }
+ *   ]
+ * })
+ *
+ * Note:
+ * You can also set the buttons array, each button is a plain object
+ * with 2 parameters type and title, we use the type to bind buttons
+ * and callbacks.
+ */
+function show_modal(title, body, buttons, options) {
+    var url = pypress.template_url.replace('__placeholder__', 'modal_base')
+    var defaults = {
+        'callbacks': [],
+        'callback_data': false
+    }
+
+    $('.modal.__dynamic').remove()
+
+    if(!buttons) {
+        buttons = [
+            {'type': 'default cancel', 'title': 'Cancel'},
+            {'type': 'primary confirm', 'title': 'Ok'}
+        ]
+    }
+
+    if(!options)
+        options = defaults
+    else
+        options = $.extend({}, defaults, options)
+
+    var view = {
+        title: title,
+        body: body,
+        buttons: buttons
+    }
+
+    get_template('modal_base', function(template) {
+        var rendered = Mustache.render(template, view);
+        $('body').append(rendered);
+
+        var $modal = $('body').find('.modal.__dynamic')
+
+        for(var x = 0; x < options.callbacks.length; x++) {
+            cb = options.callbacks[x]
+            $modal.find('button.' + cb.name).on(
+                'click', false, options.callback_data, cb.fn)
+        }
+        $modal.modal('show')
+    })
+}
+
+/*!
+ * Load a mustache template and add it to the body for future uses
+ * when finishes the load process call the function in param cb and
+ * pass the template html to it!
+ *
+ * Usage:
+ * get_template('my_template_name', function_to_be_called_when_load_finishes)
+ */
+
+function get_template(name, cb) {
+    var url = pypress.template_url.replace('__placeholder__', name)
+    var $tmpl = $('#mustache_template_' + name)
+
+    if($tmpl.length)
+        return cb($tmpl.html())
+
+    $.get(url, function(template) {
+        Mustache.parse(template)
+
+        var $script = $('<script>').html(template)
+        $script.attr('id', 'mustache_template_' + name)
+        $script.attr('type', "x-tmpl-mustache")
+        $('body').append($script)
+
+        cb(template)
+    })
+}
+
 $(document).ready(function() {
+    $.ajaxSetup({
+     beforeSend: function(xhr, settings) {
+         function getCookie(name) {
+             var cookieValue = null;
+             if (document.cookie && document.cookie != '') {
+                 var cookies = document.cookie.split(';');
+                 for (var i = 0; i < cookies.length; i++) {
+                     var cookie = jQuery.trim(cookies[i]);
+                     // Does this cookie string begin with the name we want?
+                 if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                     break;
+                 }
+             }
+         }
+         return cookieValue;
+         }
+         if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+             // Only send the token to relative URLs i.e. locally.
+             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+         }
+     }
+    });
 
     /* Enables dropdown menu to open automatically when user is
        inside one of submenus */

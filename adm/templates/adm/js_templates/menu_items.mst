@@ -1,7 +1,7 @@
 {% verbatim %}
 <div class="box-group" id="accordion-menu-items" role="tablist" aria-multiselectable="true">
-    {{#items}}    
-        <div class="panel box" style="margin-bottom: 5px;">
+    {{#items}}
+        <div class="panel box" style="margin-bottom: 5px;" id="menu_item_rank_{{pk}}">
             <div class="box-header" role="tab" id="heading_{{pk}}">
               <h4 class="box-title">
                 <i class="fa fa-fw fa-ellipsis-v"></i>
@@ -11,24 +11,24 @@
               </h4>
             </div>
             <div id="collapse_{{pk}}" class="box-collapse collapse" role="tabbox" aria-labelledby="heading_{{pk}}">
-              <div class="box-body">                
+              <div class="box-body">
                 <form role="form" method="" class="menu_item_{{pk}}">
                   <div class="form-group">
                     <label class="control-label" for="id_menu_item_{{pk}}_caption">Text to display</label>
-                    <input class="form-control" id="id_menu_item_{{pk}}_caption" name="menu_item_caption" 
-                    placeholder="Text to Display" required="required" title="" type="text" value="{{caption}}">                    
+                    <input class="form-control" id="id_menu_item_{{pk}}_caption" name="menu_item_caption"
+                    placeholder="Text to Display" required="required" title="" type="text" value="{{caption}}">
                   </div>
                 </form>
                 <div class="form-group">
                     <label class="control-label" for="id_menu_item_{{pk}}_type">Type</label>
-                    <input class="form-control" id="id_menu_item_{{pk}}_type" name="menu_item_type" 
+                    <input class="form-control" id="id_menu_item_{{pk}}_type" name="menu_item_type"
                     placeholder="Text to Display" required="required" title="" type="text" value="{{extension.menu_type_display}} - {{extension.related_display}}" disabled="disabled">
-                  </div>               
-                  <div class="form-group">                    
+                  </div>
+                  <div class="form-group">
                     <div class="btn-group" role="group">
                       <button type="button" class="btn btn-default">Move to Top</button>
                       <button type="button" class="btn btn-default">Move Up</button>
-                      <button type="button" class="btn btn-danger">Delete</button>
+                      <button type="button" class="btn btn-danger __delete_menu_item" data-pk="{{pk}}">Delete</button>
                     </div>
                   </div>
               </div>
@@ -37,8 +37,8 @@
 
         {{#subitems}}
           <div class="panel box" style="margin-bottom: 5px;">
-            <div class="box-header" role="tab" id="heading_{{pk}}">              
-              <h4 class="box-title level{{level}}">                
+            <div class="box-header" role="tab" id="heading_{{pk}}">
+              <h4 class="box-title level{{level}}">
                 <i class="fa fa-fw fa-ellipsis-v"></i>
                 <a data-toggle="collapse" data-parent="#accordion-menu-items" href="#collapse_{{pk}}" aria-expanded="true" aria-controls="#heading_{{pk}}">
                   {{caption}}
@@ -46,24 +46,24 @@
               </h4>
             </div>
             <div id="collapse_{{pk}}" class="box-collapse collapse" role="tabbox" aria-labelledby="heading_{{pk}}">
-              <div class="box-body">                
+              <div class="box-body">
                 <form role="form" method="" class="menu_item_{{pk}}">
                   <div class="form-group">
                     <label class="control-label" for="id_menu_item_{{pk}}_caption">Text to display</label>
-                    <input class="form-control" id="id_menu_item_{{pk}}_caption" name="menu_item_caption" 
-                    placeholder="Text to Display" required="required" title="" type="text" value="{{caption}}">                    
+                    <input class="form-control" id="id_menu_item_{{pk}}_caption" name="menu_item_caption"
+                    placeholder="Text to Display" required="required" title="" type="text" value="{{caption}}">
                   </div>
                 </form>
                 <div class="form-group">
                     <label class="control-label" for="id_menu_item_{{pk}}_type">Type</label>
-                    <input class="form-control" id="id_menu_item_{{pk}}_type" name="menu_item_type" 
+                    <input class="form-control" id="id_menu_item_{{pk}}_type" name="menu_item_type"
                     placeholder="Text to Display" required="required" title="" type="text" value="{{extension.menu_type_display}} - {{extension.related_display}}" disabled="disabled">
-                  </div>               
-                  <div class="form-group">                    
+                  </div>
+                  <div class="form-group">
                     <div class="btn-group" role="group">
                       <button type="button" class="btn btn-default">Move to Top</button>
                       <button type="button" class="btn btn-default">Move Up</button>
-                      <button type="button" class="btn btn-danger">Delete</button>
+                      <button type="button" class="btn btn-danger __delete_menu_item" data-pk="{{pk}}">Delete</button>
                     </div>
                   </div>
               </div>
