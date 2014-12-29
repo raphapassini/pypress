@@ -87,6 +87,7 @@
     $(document).ready(function() {
         var menu_get_url = "{% url 'adm:menu-detail' pk=0 %}"
         var menu_item_list_url = "{% url 'adm:menuitem-list' %}"
+        var update_rank_url = "{% url 'adm:menuitem-update-rank' %}"
         var active_menu_pk = false
 
         //enable chosen
@@ -198,7 +199,11 @@
 
         //New menu button
         $('.__new_menu_button').click(function() {
-            $('#new_menu_modal').modal('show')
+            $('#new_menu_modal').modal('show').on('shown.bs.modal', function() {
+                $(this).find('input:eq(0)').trigger('focus')
+            })
+
+
         })
 
         // New menu modal
@@ -265,7 +270,6 @@
             var pk = e.data.pk
             var url = pypress.menu_item_detail_url.replace('0', pk)
             var $el = $(e.data.el)
-
             $.ajax(url, {
                 type: 'DELETE',
                 success: function() {
@@ -279,6 +283,33 @@
             get_template(template, function(content) {
                 var rendered = Mustache.render(content, view);
                 $('#menu_items').html(rendered);
+                $('#menu_items').find('#accordion-menu-items').sortable({
+                    'placeholder': 'menu-item-placeholder',
+                    'update': menu_item_updated,
+                })
+            })
+        }
+
+        function menu_item_updated(event, ui) {
+            var items = $(event.target).sortable('toArray')
+
+            //get pk, the pattern is menu_item_{{pk}}
+            for(var x = 0; x < items.length; x++) {
+                items[x] = items[x].split('_').pop()
+            }
+
+            $.ajax(update_rank_url, {
+                type: 'POST',
+                data: JSON.stringify(
+                    {
+                        'items': items,
+                        'menu': active_menu_pk
+                    }
+                ),
+                contentType: 'application/json',
+                success: function() {
+                    console.log('Was updated')
+                }
             })
         }
     })

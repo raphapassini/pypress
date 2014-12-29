@@ -48,7 +48,7 @@ class MenuSerializer(serializers.ModelSerializer):
     contained_items = serializers.SerializerMethodField()
 
     def get_contained_items(self, obj):
-        items = MenuItem.objects.filter(menu=obj, level=1)
+        items = MenuItem.objects.filter(menu=obj, level=1).order_by('rank')
         serializer = MenuItemSerializer(items, many=True)
         return serializer.data
 
