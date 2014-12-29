@@ -8,7 +8,8 @@ from .views import (Index,
                     PageCreateView, PageEditView, PageListView,
                     GeneralConfigView, WriteConfigView, ReadConfigView,
                     CommentConfigView, MenuEditorView, MenuViewSet,
-                    MenuItemViewSet, load_template, pypress_javascript)
+                    ThemeManagerView, MenuItemViewSet, update_menu_item_rank,
+                    load_template, pypress_javascript)
 
 urlpatterns = patterns(
     '',
@@ -62,7 +63,13 @@ urlpatterns = patterns(
     #menu-editor
     url(r'^menus$', MenuEditorView.as_view(),
         name='menu-editor'),
-    
+    url(r'^update_menu_item_rank', update_menu_item_rank,
+        name='menuitem-update-rank'),
+
+    #theme-manager
+    url(r'^themes$', ThemeManagerView.as_view(),
+        name='themes'),
+
     #utils
     url(r'^load_tpl/(?P<tpl>[\w]+)/$', load_template,
         name='load-tpl'),
