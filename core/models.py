@@ -72,6 +72,11 @@ class Content(models.Model):
         raise OperationalError('Im sorry, for some reason the entry'
                                'could not be approved.')
 
+    def save(self):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        return super(Content, self).save()
+
 
 class Entry(Content):
     category = models.ManyToManyField(Category)
@@ -81,7 +86,7 @@ class Entry(Content):
         ordering = ['-created_at', '-published_at']
 
     def get_absolute_url(self):
-        return reverse('blog:list-entry')
+        return reverse('blog:entry-detail', kwargs={'slug': self.slug})
 
 
 class Page(Content):

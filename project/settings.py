@@ -28,6 +28,17 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+    "blog.context_processors.base_info"
+)
+
 ALLOWED_HOSTS = []
 
 SITE_ID = 1
@@ -59,6 +70,7 @@ INSTALLED_APPS = (
 
     'adm',
     'core',
+    'blog',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -104,11 +116,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-ENTRIES_REPO_FOLDER = os.path.join(
-    os.path.dirname(BASE_DIR), 'pypress_entries')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "themes"),
+)
 
 # Django-nose coverage test runner
-
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 NOSE_ARGS = [

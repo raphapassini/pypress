@@ -1,0 +1,15 @@
+{% extends 'default/blog/base.html' %}
+
+{% block content %}
+    <article class="entry {% for c in entry.category.all %} {{c.name}} {% endfor %}">
+        <h1>{{entry.title}}</h1>
+        <p class="entry-info">
+            Posted by:
+            <span class="author-name">{{entry.author.get_full_name}}</span>
+            on <span class="entry-date">{{entry.created_at}}</span>
+        </p>
+        <div class="entry-content">
+            {{entry.body|safe}}
+        </div>
+    </article>
+{% endblock %}

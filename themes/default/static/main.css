@@ -1,0 +1,57 @@
+#http://paletton.com/#uid=13B0u0kllllaFw0g0qFqFg0w0aF
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+#header {
+    padding: 40px;
+    background-image: url('img/header_bg.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    color: #fff;
+}
+
+#header > h1 {
+    font-family: 'Roboto Slab', serif;
+    font-weight: bold;
+    font-size: 42px;
+}
+
+#header > p.desc {
+    font-style: italic;
+    font-size: 20px;
+}
+
+article {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #ccc;
+}
+
+article > h1 {
+    color: #041D37;
+    font-family: 'Roboto Slab', serif;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+article > .entry-content {
+    font-family: 'Cabin', sans-serif;
+    line-height: 180%;
+    font-size: 17px;
+}
+
+article > .entry-content > p {
+    margin: 25px 0;
+}
+
+article > .entry-info {
+    color: #133253;
+    font-style: italic;
+    font-size: 14px;
+    margin-bottom: 20px;
+}

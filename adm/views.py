@@ -9,8 +9,11 @@ from django.views.generic.edit import (CreateView, UpdateView, FormView)
 from django.views.generic.list import ListView
 from treemenus.models import Menu, MenuItem
 from rest_framework import viewsets
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from core.models import Category, Entry, Page
 
+from theme_manager import ThemeManager
 from .serializers import MenuSerializer, MenuItemSerializer
 from .models import Config, MenuItemExtension
 from .forms import (GeneralConfig, WriteConfig, ReadConfig, CommentConfig,
@@ -176,7 +179,7 @@ class MenuEditorView(LoginRequiredMixin, CreateView):
         return MenuItemExtension.MENU_TYPE_OPTIONS
 
 
-class MenuViewSet(viewsets.ModelViewSet):
+class MenuViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
     A viewset for viewing and editing Menu instances
     """
@@ -184,12 +187,28 @@ class MenuViewSet(viewsets.ModelViewSet):
     queryset = Menu.objects.all()
 
 
-class MenuItemViewSet(viewsets.ModelViewSet):
+class MenuItemViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
     A viewset for viewing and editing MenuItem instances
     """
     serializer_class = MenuItemSerializer
     queryset = MenuItem.objects.all()
+
+
+class ThemeManagerView(LoginRequiredMixin, TemplateView):
+    template_name = 'adm/theme_manager.html'
+
+    def __init__(self, *args, **kwargs):
+        super(ThemeManagerView, self).__init__(*args, **kwargs)
+        self.theme_manager = ThemeManager()
+
+    def get_context_data(self, **kwargs):
+        context = super(ThemeManagerView, self).get_context_data(**kwargs)
+        context.update({
+            'themes': self.theme_manager.get_themes(),
+            'active': self.theme_manager.theme
+        })
+        return context
 
 
 def load_template(request, tpl=None):
@@ -208,3 +227,16 @@ def pypress_javascript(request):
     }
     return render(request, tpl, {'data': json.dumps(d)},
                   content_type="text/javascript")
+
+
+@login_required
+@api_view(['POST', ])
+def update_menu_item_rank(request):
+    for rank, pk in enumerate(request.data.get('items')):
+        menu_item = MenuItem.objects.get(
+            menu=request.data.get('menu'),
+            pk=pk)
+        menu_item.rank = rank
+        menu_item.save()
+
+    return Response({'success': True})

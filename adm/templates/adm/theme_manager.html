@@ -6,4 +6,13 @@
 
 {% block content %}
 <h1>Theme Manager</h1>
+
+{% for t in themes.values %}
+    <div class="theme">
+        <p>{{t.module.name}}</p>
+        <p>{{t.module.author}}</p>
+        <p>{{t.module.description}}</p>
+    </div>
+{% endfor %}
+<p>Active Theme: {{active.name}}</p>
 {% endblock %}
